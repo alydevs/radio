@@ -1,0 +1,31 @@
+settings.server.telnet.set(false)
+settings.init.daemon.set(false)
+
+log.level.set(3)
+icecast_host = "icecast"        # docker service name
+icecast_port = 8000
+icecast_password = ""     # change this
+
+def make_filtered_source(playlist_path) =
+  source = playlist(reload=3600, reload_mode="watch", playlist_path)
+  source = blank.skip(source)
+  source = blank.strip(source, max_blank=1., threshold=-45.)
+  mksafe(source)
+end
+def icecast_out(source, mount) =
+  output.icecast(
+    %mp3(bitrate=192),
+    host=icecast_host,
+    port=icecast_port,
+    password=icecast_password,
+    mount=mount,
+    name=mount,
+    source
+  )
+end
+
+icecast_out(make_filtered_source("/etc/liquidsoap/playlists/genre-rock.m3u"), "/g-rock")
+icecast_out(make_filtered_source("/etc/liquidsoap/playlists/genre-altrock.m3u"), "/g-altrock")
+icecast_out(make_filtered_source("/etc/liquidsoap/playlists/genre-electronic.m3u"), "/g-electronic")
+icecast_out(make_filtered_source("/etc/liquidsoap/playlists/mood-meditative.m3u"), "/m-meditative")
+icecast_out(make_filtered_source("/etc/liquidsoap/playlists/mood-love.m3u"), "/m-love")

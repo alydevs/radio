@@ -1,0 +1,18 @@
+services:
+  icecast2:
+    image: pltnk/icecast2
+    container_name: icecast2
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./icecast.xml:/etc/icecast2/icecast.xml
+
+  liquidsoap:
+    build: liquidsoap
+    container_name: liquidsoap
+    restart: always
+    volumes:
+      - ./script.liq:/etc/liquidsoap/script.liq
+      - ./liquidsoap/gen_playlists.py:/etc/liquidsoap/gen_playlists.py
+      - /mnt/storage/media/music:/music
